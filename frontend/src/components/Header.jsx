@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { BookOpen, Globe, Wifi, WifiOff, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
-import Button from "./ui/button";
+import Button from "./ui/Button";
 import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
