@@ -1,4 +1,4 @@
-//backend/server.js
+// backend/server.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -10,7 +10,7 @@ import authRoutes from "./routes/auth.js";
 import teacherRoutes from "./routes/teacher.js";
 import studentRoutes from "./routes/student.js";
 import adminRoutes from "./routes/admin.js";
-import ticketRoutes from './routes/tickets.js';
+import ticketRoutes from "./routes/tickets.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,55 +18,45 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 connectDB();
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:5173", process.env.FRONTEND_URL];
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// app.use(cors({
-//   origin: ["http://localhost:3000", "http://localhost:5173"],
-//   credentials: true,
-// }));
+// ✅ Allowed origins for both dev + prod
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://sarv-shiksha.vercel.app"
+];
 
+// ✅ CORS middleware
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin) return callback(null, true); 
-      // Allow specific origins
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          "The CORS policy for this site does not allow access from the specified Origin.";
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-    // Explicitly allow the Cookie header to pass through
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'], 
   })
 );
 
-app.use(express.json()); // Parses JSON bodies
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(cookieParser());
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-
-// Serve uploaded files statically
+// ✅ Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// ✅ Routes
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// API Routes
 app.use("/auth", authRoutes);
 app.use("/teacher", teacherRoutes);
 app.use("/student", studentRoutes);
 app.use("/admin", adminRoutes);
-app.use('/api/tickets', ticketRoutes);
+app.use("/api/tickets", ticketRoutes);
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
