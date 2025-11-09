@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (loginIdentifier, password, role) => {
     try {
-      const res = await axios.post('/auth/login', { loginIdentifier, password, role }, { withCredentials: true });
+      const res = await axios.post(`${import.meta.env.VITE_FRONTEND_URL}/auth/login`, { loginIdentifier, password, role }, { withCredentials: true });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       setUser(res.data.user);

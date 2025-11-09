@@ -25,7 +25,7 @@ const AuthPage = () => {
   const { user, login } = useAuth();
   const [activeTab, setActiveTab] = useState('login');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [loginData, setLoginData] = useState(initialLoginState);
   const [registerData, setRegisterData] = useState(initialRegisterState);
 
@@ -38,7 +38,7 @@ const AuthPage = () => {
     { value: 'student', label: 'Student' },
     { value: 'teacher', label: 'Teacher' },
     { value: 'admin', label: 'Admin/NGO' },
-    { value: 'technician', label: 'Technician'},
+    { value: 'technician', label: 'Technician' },
   ];
   useEffect(() => {
     setError(null);
@@ -48,9 +48,9 @@ const AuthPage = () => {
   }, [activeTab]);
 
   useEffect(() => {
-    // If already logged in, redirect to dashboard for their role
-    if (user && user.role) {
-      
+    // If already logged in, redirect to dashboard for their role
+    if (user && user.role) {
+
       if (user.role === "student") {
         // === NEW LOGIC START ===
         // If they are a student AND their grade is not set (it will be null/undefined from the backend),
@@ -72,13 +72,13 @@ const AuthPage = () => {
       } else {
         navigate("/", { replace: true });
       }
-    }
-  }, [user, navigate]);
+    }
+  }, [user, navigate]);
 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setError(null); 
+    setError(null);
 
     if (activeTab === 'login') {
       setLoginData(prevData => ({ ...prevData, [name]: value }));
@@ -126,73 +126,73 @@ const AuthPage = () => {
 
 
   const handleRegister = async (e) => {
-    e.preventDefault();
+    e.preventDefault();
 
-    if (registerData.password !== registerData.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
+    if (registerData.password !== registerData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true);
+    setError(null);
 
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/auth/register`,
-        {
-          name: registerData.fullName,
-          email: registerData.email,
-          phone: registerData.phoneNumber,
-         dob: registerData.dob,
-          password: registerData.password,
-          role: registerData.role,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/register`,
+        {
+          name: registerData.fullName,
+          email: registerData.email,
+          phone: registerData.phoneNumber,
+          dob: registerData.dob,
+          password: registerData.password,
+          role: registerData.role,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
 
-      const data = res.data;
+      const data = res.data;
 
-      if (data.success) {
+      if (data.success) {
         // === NEW LOGIC START ===
         // Registration was successful, now LOG THEM IN automatically.
         // This will update the 'user' in useAuth and trigger the useEffect hook,
         // which will (if student) redirect them to '/setup-grade'.
-        
+
         // We use email as the loginIdentifier. You can change this to registerData.phoneNumber
         // if your 'login' function uses phone instead of email.
-        const loginIdentifier = registerData.email; 
-        
+        const loginIdentifier = registerData.email;
+
         await login(
           loginIdentifier,
           registerData.password,
           registerData.role
         );
-        
+
         // No need to navigate or setActiveTab here, the useEffect will handle it.
         // === NEW LOGIC END ===
-      } else {
-        setError(data.message || "Registration failed. Please try again.");
-      }
-    } catch (err) {
-      console.error("Register error:", err);
+      } else {
+        setError(data.message || "Registration failed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Register error:", err);
       // Give a more specific error from the backend if possible
-      const errMsg = err.response?.data?.message || "An unexpected error occurred. Please try again.";
+      const errMsg = err.response?.data?.message || "An unexpected error occurred. Please try again.";
       setError(errMsg);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
   const ErrorMessage = ({ message }) => {
     if (!message) return null;
     return (
-        <div className="p-3 my-2 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
-            <span className="font-medium">Error:</span> {message}
-        </div>
+      <div className="p-3 my-2 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+        <span className="font-medium">Error:</span> {message}
+      </div>
     );
   };
 
@@ -399,9 +399,9 @@ const AuthPage = () => {
                       onClick={() => setIsRegisterDropdownOpen(!isRegisterDropdownOpen)}
                     >
                       {registerData.role ? roles.find(r => r.value === registerData.role).label : 'Select your role'}
-                       <svg className={`w-4 h-4 ml-2 transition-transform duration-200 ${isRegisterDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                       </svg>
+                      <svg className={`w-4 h-4 ml-2 transition-transform duration-200 ${isRegisterDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </button>
                     {isRegisterDropdownOpen && (
                       <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg animate-fade-in-down">
@@ -419,17 +419,17 @@ const AuthPage = () => {
                   </div>
                   {registerData.role === 'student' && (
                     <div className="mt-4 text-yellow-700 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg" role="alert">
-                       <div className="flex items-center">
-                         <div className="flex-shrink-0">
-                           <svg className="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <svg className="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fillRule="evenodd" d="M8.257 3.099a.75.75 0 011.486 0l5.58 9.92a.75.75 0 01-.643 1.131H3.32a.75.75 0 01-.643-1.131l5.58-9.92zM9 11a1 1 0 112 0 1 1 0 01-2 0zm-1-4a1 1 0 011-1h.008a1 1 0 011 1v3a1 1 0 01-1 1h-.008a1 1 0 01-1-1V7z" clipRule="evenodd" />
-                           </svg>
-                         </div>
-                         <div className="ml-3">
-                           <p className="text-sm font-bold">Guardian Consent Required</p>
-                           <p className="text-sm">For students under 18, a guardian must provide consent for account creation.</p>
-                         </div>
-                       </div>
+                          </svg>
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-sm font-bold">Guardian Consent Required</p>
+                          <p className="text-sm">For students under 18, a guardian must provide consent for account creation.</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
